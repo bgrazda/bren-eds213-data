@@ -8,7 +8,7 @@ SELECT Species, COUNT(*) AS Nest_count FROM Bird_nests
 
 -- We can nest queries!
 SELECT Scientific_name, Nest_count FROM
-    (SELECT Species, COUNT(*)vAS Nest_count FROM Bird_nests
+    (SELECT Species, COUNT(*) AS Nest_count FROM Bird_nests
     WHERE Site = 'nome'
     GROUP BY Species
     HAVING Nest_count > 10

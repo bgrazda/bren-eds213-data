@@ -1,0 +1,22 @@
+--- Part 1
+--- Create temp table with column of type REAL
+CREATE TEMP TABLE temp_table(
+    col REAL
+);
+
+-- Inserty values into table with one NULL value
+INSERT INTO temp_table (col)
+    VALUES(3), (5), (NULL), (2), (1);
+
+-- Take the average of that column
+SELECT AVG(col) FROM temp_table;
+
+-- The AVG function is not even counting the NULL value as any placeholder or value, 
+-- so it calculates the average of all the real numbers, excluding NULL, results 2.75
+
+--- Part 2 
+SELECT SUM(col)/COUNT(*) FROM temp_table;
+-- This one calculates the average WITH the null value counted in the total, resulting in 2.2 
+
+SELECT SUM(col)/COUNT(col) FROM temp_table;
+-- This one calculates the average of all the REAL values, EXCLUDING the null value in the total that is divided
