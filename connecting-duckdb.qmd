@@ -1,0 +1,69 @@
+---
+title: "Connecting duckdb"
+author: 'Brooke Grazda'
+---
+
+```{r}
+library(tidyverse)
+library(DBI)
+library(duckdb)
+```
+## Let's connect our database
+
+```{r}
+conn <- DBI::dbConnect(duckdb::duckdb(), dbdir='database/database.db')
+```
+
+Look at entire table
+```{r}
+species <- tbl(conn, 'Species')
+
+```
+
+## Let's do our first query
+
+```{r}
+species_a <- dbGetQuery(conn, "SELECT * FROM Species WHERE Code LIKE '%a'")
+```
+### There is a better way!
+
+```{r}
+library(dbplyr)
+```
+
+```{r}
+species |> 
+  filter(Relevance == 'Study species') |> 
+  select(Code, Scientific_name) |> 
+  show_query()
+```
+```{r}
+species_study <- species |> 
+  filter(Relevance == 'Study species') |> 
+  select(Code, Scientific_name)
+
+class(species_study)
+```
+```{r}
+dim(species_study)
+```
+### Can I group?
+```{r}
+species |> 
+  group_by(Relevance) |> 
+  summarize(num_species = n())  |> 
+  show_query()
+```
+
+## You can also mutate
+```{r}
+species |> mutate(Code_x = paste0('X', Code)) |> 
+  show_query()
+```
+
+##3 don't forget to clsoe the databse connection
+
+```{r}
+DBI::dbDisconnect(conn, shutdown = TRUE)
+```
+

@@ -1,0 +1,50 @@
+---
+title: "Week 6 Homework"
+author: 'Brooke Grazda'
+format: html
+editor: visual
+---
+
+```{r}
+# Load libraries
+library(tidyverse)
+library(DBI)
+library(duckdb)
+```
+
+```{r}
+conn <- DBI::dbConnect(duckdb::duckdb(), dbdir='database/database.db')
+```
+
+
+```{r}
+egg_table <- tbl(conn, "Bird_eggs")
+personnel <- tbl(conn, 'Personnel')
+bird_nests <- tbl(conn, 'Bird_nests')
+```
+
+```{r}
+# Find winners 
+winners <- inner_join(bird_nests, egg_table, by = c("Year" = "Year", 
+                                                    "Site" = "Site", 
+                                                    "Nest_ID" = "Nest_ID"), keep = FALSE) |> 
+  inner_join(personnel, by = c('Observer' = 'Abbreviation')) |> 
+  group_by(Name) |> 
+  summarise(total_eggs = n()) |> 
+  arrange(desc(total_eggs)) |>  
+  head(3) |> 
+  show_query()
+
+
+# The show_query showed that it did it all in one query using one SQL Limit clause as opposed to doing it in R. 
+```
+```{r}
+# Shut down connection
+DBI::dbDisconnect(conn, shutdown = TRUE)
+```
+
+
+
+
+
+
